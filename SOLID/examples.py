@@ -8,7 +8,6 @@
 # Staticaly typed languages - C++, JAVA - Abstract classes and interfaces
 # Dynamicaly typed languages - Ruby, Python - Duck Typing and conventions
 
-
 # SRP: A module should be responsible to one, and only one actor.
 # keywords: actor, client
 
@@ -66,7 +65,6 @@ class BasicCalculator(Calculator):
             return operation.x + operation.y
         elif isinstance(operation, Subtraction):
             return operation.x - operation.y
-
 
 # SOLUTION #1 - delegate to object, not touching on BasicCalculator to add new operations
 
