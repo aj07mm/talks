@@ -143,6 +143,13 @@ class ReportGenerator(object):
 # LSP: A o1 of type S can be replaced o2 of type T with no behaviour changes if S is subtype of T
 # keyword: Behaviour
 
+# Behavioural subtyping is undecidable in general:
+# if q is the property "method for x always terminates",
+# then it is impossible for a program (e.g. a compiler)
+# to verify that it holds true for some subtype S of T,
+# even if q does hold for T. Nonetheless, the principle is useful in reasoning
+# about the design of class hierarchies.
+
 # Preconditions cannot be strengthened in a subtype.
 #   precondition is a condition or predicate that must always be true just as prior the changes
 # Postconditions cannot be weakened in a subtype.
@@ -364,6 +371,7 @@ class ButtonImp(object):
 # http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod
 # https://stackify.com/interface-segregation-principle/
 # https://martinfowler.com/bliki/FlagArgument.html
+# https://en.wikipedia.org/wiki/Convention_over_configuration
 # ;:,,::,,;,:;:;:::,,,::.,,:,:::,,:,,,:::::,::,,:,:,,,,,,...,,.,,,,::::::,.```,,....,,..`..,,....,,......,.,......,,,.,:,:,,;,,,,,:''':,,:+:;;;++;@@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # :;,::::;;:;:;;:,;::::,,,:::::,,::,::,:,:::,:,:::,,,,,,.,,.,.,,.,.,.....```...`....`......,..,,,...,,..............,.,,:,,:::,:::#;+;;;;,;:+'';;''@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # :;;:::::;;;;:;:::::;:.:::::,,,:::,:;:,,:,,:;,,::,,,,,.:.,,,,:......`.`...``...``...,`......,.....,......,.........,.,,:,,::::;,;:;#;@;:;:'':+';##@@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
