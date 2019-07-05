@@ -6,7 +6,18 @@
 
 
 # Staticaly typed languages - C++, JAVA - Abstract classes and interfaces
-# Dynamicaly typed languages - Ruby, Python - Duck Typing and conventions
+# Dynamicaly typed languages - Ruby, Python - Duck Typing and protocols -
+#                              PEP and conventions Zen of Python
+# - https://www.python.org/dev/peps/pep-0234/#abstract
+# - import this
+
+# Why interfaces exist? To get around the diamond problem.
+
+# SOLID is about mid-level software structures called classes or something else
+# show what you mean by level in a context
+# IF is the thing you wanna get away from
+
+# #############################################
 
 # SRP: A module should be responsible to one, and only one actor.
 # keywords: actor, client
@@ -14,7 +25,7 @@
 # 1- accidental duplication
 # 2- merge conflicts
 
-# PROBLEM #1:
+# PROBLEM #1: too many people asking too many changes in one place
 
 class Employee(object):
     def calculate_pay(self): # ordered by COO
@@ -29,7 +40,7 @@ class Employee(object):
     def calculate(self): # impacts `calculate_pay` and `report_hours`
         pass
 
-# SOLUTION #1:
+# SOLUTION #1: separate the logic into different classes based on the "scope" of the problem
 
 class PaymentCalculator(object):
     def calculate_pay(self, employee): # ordered by COO
@@ -46,7 +57,7 @@ class EmployeeRepository(object):
 # OCP: open for extension, close for modification
 # keywords: extension-not-changes
 
-# PROBLEM #1 - I need to know the type inside the method to get what I want
+# PROBLEM #1: I need to know the type inside the method to get what I want
 
 class Operation(object):
     def __init__(self, x, y):
@@ -66,7 +77,7 @@ class BasicCalculator(Calculator):
         elif isinstance(operation, Subtraction):
             return operation.x - operation.y
 
-# SOLUTION #1 - delegate to object, not touching on BasicCalculator to add new operations
+# SOLUTION #1: delegate to object, not touching on BasicCalculator to add new operations
 
 class Operation(object):
     def __init__(self, x, y):
@@ -81,12 +92,11 @@ class Subtraction(Operation):
     def peform_operation(self):
         return self.x - self.y
 
-
 class BasicCalculator(Calculator):
     def calculate(self, operation):
         return operation.perform_operation()
 
-# PROBLEM #2 - flag parameter to dictate behaviour of another class, bad, bad, very bad
+# PROBLEM #2: flag parameter to dictate behaviour of another class, bad, bad, very bad
 
 class Printer(object):
     def print(self, filename):
@@ -109,7 +119,7 @@ class ReportGenerator(object):
         else:
             raise BaseException("There is no printer for that type")
 
-# SOLUTION #2 - delegate instead of ifs
+# SOLUTION #2: delegate instead of ifs
 
 class Printer(object):
     def print(self, filename):
@@ -130,7 +140,6 @@ class ReportGenerator(object):
     def print(self, filename, ink_type):
         self.printer.print_file(filename)
 
-
 # LSP: A o1 of type S can be replaced o2 of type T with no behaviour changes if S is subtype of T
 # keyword: Behaviour
 
@@ -143,7 +152,7 @@ class ReportGenerator(object):
 # History constraint (the "history rule").
 #   ...
 
-# PROBLEM #1 - behaviour of rectangle is not the same as a square
+# PROBLEM #1: behaviour of rectangle is not the same as a square
 
 class Rectangle(object):
     pass
@@ -156,7 +165,7 @@ class ShapeCalculator(object):
         return len(shapes) * shapes.x * 2
 
 
-# SOLUTION #1 - not all shapes behave the same way
+# SOLUTION #1: not all shapes behave the same way
 
 class Shape(object):
     def get_perimeter(self):
@@ -172,9 +181,7 @@ class ShapeCalculator(object):
     def calculate_perimeter(self, shapes):
         return sum(shape.get_perimeter() for shape in shapes)
 
-
-# PROBLEM #2 - not all vehicles behave the same way
-#            - see that the behaviour changes not the number of methods
+# PROBLEM #2: not all tasks behave the same way. The behaviour changes not the number of methods
 
 class Task(object):
     status = None
@@ -193,7 +200,7 @@ class ProjectTask(Task):
 # ISP: client should be forced to depend on methods it does not use
 # keyword: too-many-methods
 
-# PROBLEM #1 - a lot of methods not being used
+# PROBLEM #1: a lot of methods not being used
 
 class Charger(object):
     def charge_usb1(self):
@@ -209,7 +216,7 @@ class AndroidCharger(Charger):
 class AppleCharger(Charger):
     pass
 
-# SOLUTION #1 - abstract the methods and delegate - leave details to implementation
+# SOLUTION #1: abstract the methods and delegate. Leave details to implementation
 
 class Charger(object):
     def connect(self):
@@ -228,7 +235,7 @@ class AppleCharger(object):
         IOAPPLE.connect(phone)
 
 
-# PROBLEM #2 - one method is not being used in one of the implementations
+# PROBLEM #2: one method is not being used in one of the implementations
 
 class CoffeeMachine(object):
     def brew_filter_coffee(self):
@@ -244,7 +251,7 @@ class BasicCoffeeMachine(CoffeeMachine):
 class EspressoMachine(CoffeeMachine):
     pass
 
-# SOLUTION #2 - add another level of inheritance
+# SOLUTION #2: add another level of inheritance
 
 class CoffeeMachine(object):
     def add_ground_coffee(self):
@@ -267,7 +274,7 @@ class EspressoMachine(EspressoCoffeeMachine):
 # DIP: high level modules and low level modules should depend on abstractions
 # keyword: conform-to-interface-contract, program-to-abstraction-rather-than-implementation
 
-# PROBLEM #1 - no contract == ifs
+# PROBLEM #1: no contract == ifs
 
 class CopyProgram(object):
     devices = {'printer': Printer, 'disk': Disk}
@@ -282,7 +289,7 @@ class CopyProgram(object):
             else:
                 WriteDisk(c)
 
-# SOLUTION #1 - establish a contract (interface) between the classes inverting the dependency
+# SOLUTION #1: establish a contract (interface) between the classes inverting the dependency
 
 class Reader(object): # interface
     pass
@@ -301,7 +308,7 @@ class CopyProgram(object):
         with reader() as c:
             writer(c)
 
-# PROBLEM #2 - program to implementation is bad
+# PROBLEM #2: program to implementation is bad
 
 class Lamp(object):
     def turn_on(self):
@@ -323,7 +330,7 @@ class Button(object):
         else:
             self.lamp.turn_off()
 
-# SOLUTION #2 - dependency inverted for contracts(abstraction) rather than implementation
+# SOLUTION #2: dependency inverted for contracts(abstraction) rather than implementation
 
 class ButtonClient(object):
     def turn_on(self):
