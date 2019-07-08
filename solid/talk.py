@@ -469,7 +469,7 @@ class EspressoMachine(EspressoCoffeeMachine):
 
 # DIP: high level modules and low level modules should depend on abstractions
 # keyword: conform-to-interface-contract, program-to-abstraction-rather-than-implementation
-# Show source dependecy vs flow of control diagram
+# show source dependecy vs flow of control diagram
 
 # PROBLEM #1: no contract == ifs
 
@@ -559,9 +559,7 @@ class Lamp(ButtonClient):
 class ButtonImp(object):
     pass
 
-
-
-# reference:
+# Reference:
 # https://www.python.org/dev/peps/pep-0544/#using-protocols-in-python-2-7-3-5
 # https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)
 # https://softwareengineering.stackexchange.com/questions/170138/is-this-a-violation-of-the-liskov-substitution-principle/170141
