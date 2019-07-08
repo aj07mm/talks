@@ -9,6 +9,7 @@
 # Dynamicaly typed languages - Ruby, Python - Duck Typing and protocols -
 #                              PEP and conventions Zen of Python
 # - https://www.python.org/dev/peps/pep-0234/#abstract
+# - import typing
 # - import this
 
 # Why interfaces exist? To get around the diamond problem.
@@ -21,9 +22,6 @@
 
 # SRP: A module should be responsible to one, and only one actor.
 # keywords: actor, client
-
-# 1- accidental duplication
-# 2- merge conflicts
 
 # PROBLEM #1: too many people asking too many changes in one place
 
@@ -54,8 +52,51 @@ class EmployeeRepository(object):
     def save(self, employee): # ordered by COO
         pass
 
+# PROBLEM #2: Same again, but multiple abstractions
+
+class Modem(object):
+    def dial(self, pno): # connection
+        pass
+    def hangup(self): # connection
+        pass
+    def send(self, c): # communication
+        pass
+    def recv(self): # communication
+        pass
+
+# SOLUTION #2: isolate responsibilities
+
+from abc import ABC
+
+class DataChannel(ABC):
+    def send(self, c): # communication
+        pass
+    def recv(self): # communication
+        pass
+
+class Connection(ABC):
+    def dial(self, pno): # connection
+        pass
+    def hangup(self): # connection
+        pass
+
+class Modem(DataChannel, Connection):
+    pass
+
+# Main consequences:
+# 1- accidental duplication
+# 2- merge conflicts
+
 # OCP: open for extension, close for modification
 # keywords: extension-not-changes
+
+# It should be clear that no significant program can be 100% closed. Depends on the requirements
+# Main reason behind OOD
+
+# convetions:
+# - make member variables private as much as possible
+# - no global veriables
+# - avoid dynamic typecasting
 
 # PROBLEM #1: I need to know the type inside the method to get what I want
 
@@ -140,7 +181,44 @@ class ReportGenerator(object):
     def print(self, filename, ink_type):
         self.printer.print_file(filename)
 
+# PROBLEM #3:
+
+class Circle(object):
+    pass
+
+class Square(object):
+    pass
+
+def draw_all_shapes(shapes):
+    for shape in shapes:
+        if isinstance(shape, Square):
+            draw_square(shape)
+        if isinstance(shape, Circle):
+            draw_circle(shape)
+
+# SOLUTION #3:
+
+class Shape(object):
+    def draw(self):
+        pass
+
+class Circle(Shape):
+    pass
+
+class Square(Shape):
+    pass
+
+def draw_all_shapes(shapes):
+    for shape in shapes:
+        shape.draw()
+
+# SOLUTION #3.2: Good, but what if we want to change the order? There is no way to be 100% closed
+
+# ---
+
 # LSP: A o1 of type S can be replaced o2 of type T with no behaviour changes if S is subtype of T
+# note: The LSP says that the subclass can be used in place of the parent class, not that the parent class can be used in place of the subclass.
+#       The validity of a model can only be expressed in terms of its clients
 # keyword: Behaviour
 
 # Behavioural subtyping is undecidable in general:
@@ -150,45 +228,100 @@ class ReportGenerator(object):
 # even if q does hold for T. Nonetheless, the principle is useful in reasoning
 # about the design of class hierarchies.
 
-# Preconditions cannot be strengthened in a subtype.
-#   precondition is a condition or predicate that must always be true just as prior the changes
-# Postconditions cannot be weakened in a subtype.
-#   postcondition is a condition or predicate that must always be true just as after the changes
-# Invariants of the supertype must be preserved in a subtype.
-#   assertions that used to be true on runtime prior the changes
-# History constraint (the "history rule").
-#   ...
+
+# LSP Requirements:
+
+# - Contravariance of method arguments in the subtype.
+#   the very same as the definition for method arguments
+# - Covariance of return types in the subtype.
+#   the very same as the definition for method return types
+# - No new exceptions should be thrown by methods of the subtype,
+# except where those exceptions are themselves subtypes of exceptions thrown by the methods of the supertype.
+#   the very same as the definition for exceptions types and if raised or not
+# - Preconditions cannot be strengthened in a subtype.
+#   precondition is a condition/assertion/predicate that must always be true just as prior the execution of the function
+# - Postconditions cannot be weakened in a subtype.
+#   postcondition is a condition/assertion/predicate or predicate that must always be true just as after the exection of the function
+# - Invariants of the supertype must be preserved in a subtype.
+#   assertions that are true on function runtime
+#           {P} C {Q}
+# - History constraint (the "history rule").
+#  You can add method as long as the ones inherited behave the same
+
+
+# In other words, when using an object through its base class interface, the user knows
+# only the preconditions and postconditions of the base class. Thus, derived objects must not
+# expect such users to obey preconditions that are stronger then those required by the base
+# class. That is, they must accept anything that the base class could accept. Also, derived
+# classes must conform to all the postconditions of the base. That is, their behaviors and outputs
+# must not violate any of the constraints established for the base class. Users of the base
+# class must not be confused by the output of the derived class.
+
+# gist: the whole point of LSP is to be able to pass around a subclass as the parent class without any problems. It says nothing about not being able to downcast for additional functionality.
 
 # PROBLEM #1: behaviour of rectangle is not the same as a square
+#             postcondition is a condition or predicate that must always be true just as after the changes
 
 class Rectangle(object):
-    pass
+    width = None
+    height = None
+
+    def set_width(self, w):
+        self.width = w
+
+    def set_height(self, h):
+        self.height = h
+
 
 class Square(Rectangle):
+    def set_width(self, w):
+        self.width = w
+        set_height(w)
+
+    def set_height(self, h):
+        self.height = h
+        set_width(h)
+
+def g(rectangle): # works for a rectangle but not for a square
+    rectangle.set_width(5)
+    rectangle.set_height(3)
+
+# SOLUTION #1: move to a better abstraction
+
+class Quadrilateral(object):
+    x1 = None
+    x2 = None
+    y1 = None
+    y2 = None
+    width = None
+    height = None
+
+    def set_x1(self, x1):
+        self.x1 = x1
+
+    # ...
+
+    def get_width(self):
+        return self.x2 - self.x1
+
+    def get_height(self):
+        return self.y2 - self.y1
+
+
+class Rectangle(Quadrilateral):
     pass
 
-class ShapeCalculator(object):
-    def calculate_perimeter(self, shapes):
-        return len(shapes) * shapes.x * 2
-
-
-# SOLUTION #1: not all shapes behave the same way
-
-class Shape(object):
-    def get_perimeter(self):
-        return self.x * 2 + self.y * 2
-
-class Rectangle(Shape):
+class Square(Quadrilateral):
     pass
 
-class Square(object):
-    pass
-
-class ShapeCalculator(object):
-    def calculate_perimeter(self, shapes):
-        return sum(shape.get_perimeter() for shape in shapes)
+def g(rectangle): # works for a rectangle but not for a square
+    rectangle.set_x1(10)
+    rectangle.set_x2(5)
+    rectangle.set_y1(6)
+    rectangle.set_y2(3)
 
 # PROBLEM #2: not all tasks behave the same way. The behaviour changes not the number of methods
+#             precondition is a condition or predicate that must always be true just as prior the changes
 
 class Task(object):
     status = None
@@ -201,8 +334,62 @@ class BasicTask(Task):
 
 class ProjectTask(Task):
     def close(self):
-        if (self.status == 'STARTED')
-              raise Exception("Cannot close a started Project Task");
+        if self.status == 'STARTED':
+            raise Exception("Cannot close Task")
+        super().close()
+
+# SOLUTION #2: bring the behaviour up the inheritance chain
+
+class Task(object):
+    status = None
+
+    def can_close(self):
+        return True
+
+    def close(self):
+        if self.can_close():
+            self.status = 'CLOSED'
+        raise Exception("Cannot close Task") # exception expected on supertype
+
+class BasicTask(Task):
+    pass
+
+class ProjectTask(Task):
+    def can_close(self):
+        return self.status == 'STARTED'
+
+# PROBLEM #3: immutable point - allowed Under the definitions of Meyer and America
+#             History constraint (the "history rule").
+#             You can add method as long as they ones inherited behave the same
+
+class ImmutablePoint(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+class MutablePoint(ImmutablePoint):
+    def set_x(self, x):
+        self.x = x
+
+    def set_y(self, y):
+        self.y = y
+
+# SOLUTION #3: Move methods up the chain
+
+class Point(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+class ImmutablePoint(Point):
+    pass
+
+class MutablePoint(Point):
+    def set_x(self, x):
+        self.x = x
+
+    def set_y(self, y):
+        self.y = y
 
 # ISP: client should be forced to depend on methods it does not use
 # keyword: too-many-methods
@@ -241,7 +428,6 @@ class AppleCharger(object):
     def connect(self):
         IOAPPLE.connect(phone)
 
-
 # PROBLEM #2: one method is not being used in one of the implementations
 
 class CoffeeMachine(object):
@@ -278,8 +464,12 @@ class BasicCoffeeMachine(FilterCoffeeMachine):
 class EspressoMachine(EspressoCoffeeMachine):
     pass
 
+# PROBLEM #3:
+
+
 # DIP: high level modules and low level modules should depend on abstractions
 # keyword: conform-to-interface-contract, program-to-abstraction-rather-than-implementation
+# Show source dependecy vs flow of control diagram
 
 # PROBLEM #1: no contract == ifs
 
@@ -298,10 +488,12 @@ class CopyProgram(object):
 
 # SOLUTION #1: establish a contract (interface) between the classes inverting the dependency
 
-class Reader(object): # interface
+from abc import ABC
+
+class Reader(ABC):
     pass
 
-class Writer(object): # interface
+class Writer(ABC):
     pass
 
 class KeyboardReader(object):
@@ -339,7 +531,9 @@ class Button(object):
 
 # SOLUTION #2: dependency inverted for contracts(abstraction) rather than implementation
 
-class ButtonClient(object):
+from abc import ABC
+
+class ButtonClient(ABC):
     def turn_on(self):
         pass
     def turn_off(self):
@@ -368,10 +562,16 @@ class ButtonImp(object):
 
 
 # reference:
+# https://www.python.org/dev/peps/pep-0544/#using-protocols-in-python-2-7-3-5
+# https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)
+# https://softwareengineering.stackexchange.com/questions/170138/is-this-a-violation-of-the-liskov-substitution-principle/170141
+# https://stackoverflow.com/questions/24408748/does-adding-public-method-to-subclass-violate-lsp-liskov-substitution-principle
+# https://en.wikipedia.org/wiki/Hoare_logic
 # http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod
 # https://stackify.com/interface-segregation-principle/
 # https://martinfowler.com/bliki/FlagArgument.html
 # https://en.wikipedia.org/wiki/Convention_over_configuration
+
 # ;:,,::,,;,:;:;:::,,,::.,,:,:::,,:,,,:::::,::,,:,:,,,,,,...,,.,,,,::::::,.```,,....,,..`..,,....,,......,.,......,,,.,:,:,,;,,,,,:''':,,:+:;;;++;@@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # :;,::::;;:;:;;:,;::::,,,:::::,,::,::,:,:::,:,:::,,,,,,.,,.,.,,.,.,.....```...`....`......,..,,,...,,..............,.,,:,,:::,:::#;+;;;;,;:+'';;''@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # :;;:::::;;;;:;:::::;:.:::::,,,:::,:;:,,:,,:;,,::,,,,,.:.,,,,:......`.`...``...``...,`......,.....,......,.........,.,,:,,::::;,;:;#;@;:;:'':+';##@@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
