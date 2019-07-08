@@ -560,6 +560,7 @@ class ButtonImp(object):
     pass
 
 # Reference:
+# https://stackoverflow.com/questions/3023503/how-can-i-check-if-an-object-is-an-iterator-in-python
 # https://www.python.org/dev/peps/pep-0544/#using-protocols-in-python-2-7-3-5
 # https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)
 # https://softwareengineering.stackexchange.com/questions/170138/is-this-a-violation-of-the-liskov-substitution-principle/170141
