@@ -8,9 +8,14 @@
 # Staticaly typed languages - C++, JAVA - Abstract classes and interfaces
 # Dynamicaly typed languages - Ruby, Python - Duck Typing and protocols -
 #                              PEP and conventions Zen of Python
+
 # - https://www.python.org/dev/peps/pep-0234/#abstract
 # - import typing
 # - import this
+
+# SOLID - classes
+# other principles:
+# component chesion (4)/component coupling (4) - group of classes
 
 # Why interfaces exist? To get around the diamond problem.
 
