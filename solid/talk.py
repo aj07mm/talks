@@ -564,6 +564,7 @@ class Lamp(ButtonClient):
 class ButtonImp(object):
     pass
 
+
 # Reference:
 # https://stackoverflow.com/questions/3023503/how-can-i-check-if-an-object-is-an-iterator-in-python
 # https://www.python.org/dev/peps/pep-0544/#using-protocols-in-python-2-7-3-5
@@ -575,6 +576,7 @@ class ButtonImp(object):
 # https://stackify.com/interface-segregation-principle/
 # https://martinfowler.com/bliki/FlagArgument.html
 # https://en.wikipedia.org/wiki/Convention_over_configuration
+# https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 
 # ;:,,::,,;,:;:;:::,,,::.,,:,:::,,:,,,:::::,::,,:,:,,,,,,...,,.,,,,::::::,.```,,....,,..`..,,....,,......,.,......,,,.,:,:,,;,,,,,:''':,,:+:;;;++;@@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # :;,::::;;:;:;;:,;::::,,,:::::,,::,::,:,:::,:,:::,,,,,,.,,.,.,,.,.,.....```...`....`......,..,,,...,,..............,.,,:,,:::,:::#;+;;;;,;:+'';;''@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
