@@ -20,6 +20,10 @@
 # other principles:
 # component chesion (4)/component coupling (4) - group of classes
 
+# clean code -> good bricks
+# SOLID -> good walls
+# component principles -> good rooms into buildings
+
 # Why interfaces exist? To get around the diamond problem.
 
 # SOLID is about mid-level software structures called classes or something else
